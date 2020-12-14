@@ -13,5 +13,7 @@ namespace Usemam.IdentityServer4.KeyRack
         public TimeSpan KeyRetirement { get; set; } = TimeSpan.FromDays(180);
 
         public TimeSpan KeyActivation { get; set; } = TimeSpan.FromDays(7);
+
+        public TimeSpan KeyInitialization { get; set; } = TimeSpan.FromSeconds(5);
     }
 }

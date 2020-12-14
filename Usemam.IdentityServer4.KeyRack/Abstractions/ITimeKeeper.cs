@@ -13,5 +13,7 @@ namespace Usemam.IdentityServer4.KeyRack
         bool IsRetired(RsaKey key);
 
         bool IsActive(RsaKey key, bool useActivationDelay);
+
+        TimeSpan GetKeyAge(RsaKey key);
     }
 }

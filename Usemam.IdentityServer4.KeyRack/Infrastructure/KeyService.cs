@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Usemam.IdentityServer4.KeyRack.Model;
@@ -8,6 +10,7 @@ namespace Usemam.IdentityServer4.KeyRack
 {
     public class KeyService : IKeyService
     {
+        private readonly SemaphoreSlim _rotationLock = new SemaphoreSlim(1);
         private readonly KeyRackOptions _options;
         private readonly IKeyRepository _repository;
         private readonly IKeySerializer _serializer;
@@ -40,7 +43,38 @@ namespace Usemam.IdentityServer4.KeyRack
         private async Task<(IEnumerable<RsaKey>, RsaKey)> ProcessKeysAsync()
         {
             var keys = await LoadKeysAsync();
-            return (keys, GetActiveKey(keys));
+            var activeKey = GetActiveKey(keys);
+            var rotationDue = false;
+            
+            if (activeKey != null)
+            {
+                rotationDue = IsRotationDue(keys);
+            }
+
+            if (activeKey == null || rotationDue)
+            {
+                await _rotationLock.WaitAsync();
+                try
+                {
+                    keys = await LoadKeysAsync();
+                    activeKey ??= GetActiveKey(keys);
+                    if (rotationDue)
+                    {
+                        rotationDue = IsRotationDue(keys);
+                    }
+
+                    if (activeKey == null || rotationDue)
+                    {
+                        (keys, activeKey) = await RotateKeys();
+                    }
+                }
+                finally
+                {
+                    _rotationLock.Release();
+                }
+            }
+
+            return (keys, activeKey);
         }
 
         private RsaKey GetActiveKey(IEnumerable<RsaKey> keys)
@@ -67,7 +101,7 @@ namespace Usemam.IdentityServer4.KeyRack
             }
 
             var activeKeys = keys.Where(key => _timeKeeper.IsActive(key, useActivationDelay)).ToArray();
-            return activeKeys.Any() ? activeKeys.OrderBy(key => key.Created).First() : null;
+            return activeKeys.OrderBy(key => key.Created).FirstOrDefault();
         }
 
         private async Task<IEnumerable<RsaKey>> LoadKeysAsync()
@@ -86,6 +120,47 @@ namespace Usemam.IdentityServer4.KeyRack
             }
 
             return keys.Except(retiredKeys).ToArray();
+        }
+
+        private bool IsRotationDue(IEnumerable<RsaKey> keys)
+        {
+            if (keys == null || !keys.Any())
+            {
+                return true;
+            }
+            
+            var activeKey = GetActiveKey(keys);
+            if (activeKey == null)
+            {
+                return true;
+            }
+
+            var activationPendingKey =
+                keys.Where(key => key.Created > activeKey.Created)
+                    .OrderByDescending(key => key.Created)
+                    .FirstOrDefault();
+            activeKey = activationPendingKey ?? activeKey;
+            return _options.KeyExpiration.Subtract(_timeKeeper.GetKeyAge(activeKey)) < _options.KeyActivation;
+        }
+
+        private async Task<(IEnumerable<RsaKey>, RsaKey)> RotateKeys()
+        {
+            await InsertNewKey();
+            if (_options.KeyInitialization > TimeSpan.Zero)
+            {
+                await Task.Delay(_options.KeyInitialization);
+            }
+
+            var keys = await LoadKeysAsync();
+            return (keys, GetActiveKey(keys));
+        }
+
+        private async Task InsertNewKey()
+        {
+            var securityKey = _options.CreateSecurityKey();
+            var now = _timeKeeper.UtcNow;
+            var key = new RsaKey(securityKey, now);
+            await _repository.StoreKeyAsync(_serializer.Serialize(key));
         }
     }
 }

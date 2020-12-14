@@ -17,13 +17,31 @@ namespace Usemam.IdentityServer4.KeyRack
 
         public bool IsActive(RsaKey key, bool useActivationDelay)
         {
-            throw new NotImplementedException();
+            if (key == null)
+            {
+                return false;
+            }
+
+            var time1 = UtcNow;
+            var time2 = key.Created;
+            if (useActivationDelay)
+            {
+                time2 = time2.Add(_options.KeyActivation);
+            }
+
+            if (time2 > time1)
+            {
+                // key not yet active
+                return false;
+            }
+
+            return !IsExpired(key);
         }
 
         public bool IsExpired(RsaKey key) => GetKeyAge(key) >= _options.KeyExpiration;
 
         public bool IsRetired(RsaKey key) => GetKeyAge(key) >= _options.KeyRetirement;
 
-        private TimeSpan GetKeyAge(RsaKey key) => UtcNow - key.Created;
+        public TimeSpan GetKeyAge(RsaKey key) => UtcNow - key.Created;
     }
 }

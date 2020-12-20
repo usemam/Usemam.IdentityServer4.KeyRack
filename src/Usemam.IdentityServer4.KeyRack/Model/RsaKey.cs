@@ -7,6 +7,10 @@ namespace Usemam.IdentityServer4.KeyRack.Model
 {
     public class RsaKey : Key
     {
+        public RsaKey()
+        {
+        }
+
         public RsaKey(RsaSecurityKey key, DateTime created)
             : base(key.KeyId, created)
         {

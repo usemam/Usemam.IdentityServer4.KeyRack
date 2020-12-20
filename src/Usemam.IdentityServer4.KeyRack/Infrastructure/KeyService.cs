@@ -155,12 +155,12 @@ namespace Usemam.IdentityServer4.KeyRack
             return (keys, GetActiveKey(keys));
         }
 
-        private async Task InsertNewKey()
+        private Task InsertNewKey()
         {
             var securityKey = _options.CreateSecurityKey();
             var now = _timeKeeper.UtcNow;
             var key = new RsaKey(securityKey, now);
-            await _repository.StoreKeyAsync(_serializer.Serialize(key));
+            return _repository.StoreKeyAsync(_serializer.Serialize(key));
         }
     }
 }

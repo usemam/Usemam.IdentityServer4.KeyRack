@@ -1,0 +1,3 @@
+[![Build Status](https://dev.azure.com/useinm/Usemam.IdentityServer4.KeyRack/_apis/build/status/usemam.Usemam.IdentityServer4.KeyRack?branchName=master)](https://dev.azure.com/useinm/Usemam.IdentityServer4.KeyRack/_build/latest?definitionId=4&branchName=master)
+## About Usemam.IdentityServer4.KeyRack
+KeyRack is a seamless key management extension for [IdentityServer4](https://github.com/IdentityServer/IdentityServer4).

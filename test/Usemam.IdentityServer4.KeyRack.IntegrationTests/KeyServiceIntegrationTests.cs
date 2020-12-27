@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 using Xunit;
@@ -14,7 +13,7 @@ namespace Usemam.IdentityServer4.KeyRack.IntegrationTests
     public class KeyServiceIntegrationTests
     {
         private KeyRackOptions CreateTestOptions(
-            int keyInitDelaySec = 1,
+            int keyInitDelaySec = 2,
             int keyActivationDelaySec = 5,
             int keyExpirationSec = 60,
             int keyRetirementSec = 120) =>
@@ -53,8 +52,8 @@ namespace Usemam.IdentityServer4.KeyRack.IntegrationTests
         [ClassData(typeof(KeyServiceFactoryData))]
         public async void ActiveKeyExpires_NewKeyCreated(IKeyServiceIntegrationFactory factory)
         {
-            const int expirationTimeSec = 5;
-            var options = CreateTestOptions(keyActivationDelaySec: 3, keyExpirationSec: expirationTimeSec);
+            const int expirationTimeSec = 10;
+            var options = CreateTestOptions(keyExpirationSec: expirationTimeSec);
             var service = factory.CreateService(options);
 
             var key1 = await service.GetCurrentKeyAsync();
@@ -67,7 +66,6 @@ namespace Usemam.IdentityServer4.KeyRack.IntegrationTests
             Assert.NotEqual(key2, key1);
 
             var allKeys = await service.GetAllKeysAsync();
-            Assert.Equal(2, allKeys.Count());
             Assert.Contains(key1, allKeys);
             Assert.Contains(key2, allKeys);
         }
@@ -76,8 +74,8 @@ namespace Usemam.IdentityServer4.KeyRack.IntegrationTests
         [ClassData(typeof(KeyServiceFactoryData))]
         public async void ExpiredKeyRetires_DeletedFromRepository(IKeyServiceIntegrationFactory factory)
         {
-            const int retirementTimeSec = 10;
-            var options = CreateTestOptions(keyActivationDelaySec: 3, keyExpirationSec: 5, keyRetirementSec: retirementTimeSec);
+            const int retirementTimeSec = 20;
+            var options = CreateTestOptions(keyExpirationSec: 10, keyRetirementSec: retirementTimeSec);
             var service = factory.CreateService(options);
 
             var key1 = await service.GetCurrentKeyAsync();
@@ -90,7 +88,6 @@ namespace Usemam.IdentityServer4.KeyRack.IntegrationTests
             Assert.NotEqual(key2, key1);
 
             var allKeys = await service.GetAllKeysAsync();
-            Assert.Equal(1, allKeys.Count());
             Assert.DoesNotContain(key1, allKeys);
             Assert.Contains(key2, allKeys);
         }

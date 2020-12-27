@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Xunit;
@@ -47,6 +48,52 @@ namespace Usemam.IdentityServer4.KeyRack.IntegrationTests
             Assert.NotNull(key2);
             Assert.Equal(key1, key2);
         }
+
+        [Theory]
+        [ClassData(typeof(KeyServiceFactoryData))]
+        public async void ActiveKeyExpires_NewKeyCreated(IKeyServiceIntegrationFactory factory)
+        {
+            const int expirationTimeSec = 5;
+            var options = CreateTestOptions(keyActivationDelaySec: 3, keyExpirationSec: expirationTimeSec);
+            var service = factory.CreateService(options);
+
+            var key1 = await service.GetCurrentKeyAsync();
+            Assert.NotNull(key1);
+
+            await Task.Delay(TimeSpan.FromSeconds(expirationTimeSec + 1));
+
+            var key2 = await service.GetCurrentKeyAsync();
+            Assert.NotNull(key2);
+            Assert.NotEqual(key2, key1);
+
+            var allKeys = await service.GetAllKeysAsync();
+            Assert.Equal(2, allKeys.Count());
+            Assert.Contains(key1, allKeys);
+            Assert.Contains(key2, allKeys);
+        }
+
+        [Theory]
+        [ClassData(typeof(KeyServiceFactoryData))]
+        public async void ExpiredKeyRetires_DeletedFromRepository(IKeyServiceIntegrationFactory factory)
+        {
+            const int retirementTimeSec = 10;
+            var options = CreateTestOptions(keyActivationDelaySec: 3, keyExpirationSec: 5, keyRetirementSec: retirementTimeSec);
+            var service = factory.CreateService(options);
+
+            var key1 = await service.GetCurrentKeyAsync();
+            Assert.NotNull(key1);
+
+            await Task.Delay(TimeSpan.FromSeconds(retirementTimeSec + 1));
+
+            var key2 = await service.GetCurrentKeyAsync();
+            Assert.NotNull(key2);
+            Assert.NotEqual(key2, key1);
+
+            var allKeys = await service.GetAllKeysAsync();
+            Assert.Equal(1, allKeys.Count());
+            Assert.DoesNotContain(key1, allKeys);
+            Assert.Contains(key2, allKeys);
+        }
     }
 
     public class KeyServiceFactoryData : IEnumerable<object[]>
@@ -54,6 +101,7 @@ namespace Usemam.IdentityServer4.KeyRack.IntegrationTests
         public IEnumerator<object[]> GetEnumerator()
         {
             yield return new object[] { new DefaultKeyServiceIntegrationFactory() };
+            yield return new object[] { new DataProtectionKeyServiceIntegrationFactory() };
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

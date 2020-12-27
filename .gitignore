@@ -106,6 +106,9 @@ _TeamCity*
 # DotCover is a Code Coverage Tool
 *.dotCover
 
+# Coverlet
+coverage.cobertura.xml
+
 # NCrunch
 _NCrunch_*
 .*crunch*.local.xml

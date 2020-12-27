@@ -89,7 +89,7 @@ namespace Usemam.IdentityServer4.KeyRack.UnitTests
             Assert.Equal(3, storedKeys.Count());
         }
 
-        private Task<IEnumerable<SerializedKey>> RunConcurrentServices(IEnumerable<SerializedKey> existingKeys)
+        private async Task<IEnumerable<SerializedKey>> RunConcurrentServices(IEnumerable<SerializedKey> existingKeys)
         {
             _repository = new TestKeyRepository(existingKeys);
 
@@ -99,8 +99,10 @@ namespace Usemam.IdentityServer4.KeyRack.UnitTests
             Task.WaitAll(
                 Task.Run(() => service1.GetAllKeysAsync().Wait(ServiceExecutionTimeout)),
                 Task.Run(() => service2.GetAllKeysAsync().Wait(ServiceExecutionTimeout)));
+            
+            await Task.Delay(TimeSpan.FromMilliseconds(500));
 
-            return _repository.LoadKeysAsync();
+            return await _repository.LoadKeysAsync();
         }
 
         private IKeyService NewService() =>

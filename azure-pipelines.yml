@@ -15,7 +15,7 @@ steps:
   displayName: 'Run tests'
 
 - task: PublishCodeCoverageResults@1
-  displayName: 'Publish coverage results'
+  displayName: 'Publish integration tests coverage results'
   inputs:
     codeCoverageTool: 'cobertura'
-    summaryFileLocation: 'test/**/coverage.cobertura.xml'
+    summaryFileLocation: 'test/Usemam.IdentityServer4.KeyRack.IntegrationTests/coverage.cobertura.xml'

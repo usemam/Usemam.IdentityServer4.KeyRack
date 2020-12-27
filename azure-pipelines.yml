@@ -9,6 +9,10 @@ variables:
 
 steps:
 - script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
-- script: dotnet test --configuration $(buildConfiguration)
-  displayName: 'dotnet test $(buildConfiguration)'
+  displayName: 'Build code'
+- task: VSTest@2
+  inputs:
+    testSelector: testAssemblies
+    testAssemblyVer2: test/**/*Tests.dll
+    codeCoverageEnabled: True
+  displayName: 'Run tests'

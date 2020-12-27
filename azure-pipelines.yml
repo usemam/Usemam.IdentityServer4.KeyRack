@@ -9,6 +9,13 @@ variables:
 
 steps:
 - script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
-- script: dotnet test --configuration $(buildConfiguration)
-  displayName: 'dotnet test $(buildConfiguration)'
+  displayName: 'Build code'
+
+- script: dotnet test --configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+  displayName: 'Run tests'
+
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish coverage results'
+  inputs:
+    codeCoverageTool: 'cobertura'
+    summaryFileLocation: 'test/**/coverage.cobertura.xml'

@@ -4,11 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Moq;
-
 using Xunit;
 
-using Usemam.IdentityServer4.KeyRack;
 using Usemam.IdentityServer4.KeyRack.Model;
 
 namespace Usemam.IdentityServer4.KeyRack.UnitTests
@@ -29,12 +26,34 @@ namespace Usemam.IdentityServer4.KeyRack.UnitTests
         }
 
         [Fact]
-        public async void NoKeys_TwoNewKeysCreated()
+        public async void NoKeys_NewKeysCreated()
         {
             var storedKeys = await RunConcurrentServices(Enumerable.Empty<SerializedKey>());
 
             Assert.NotNull(storedKeys);
-            Assert.Equal(2, storedKeys.Count());
+            Assert.True(storedKeys.Count() >= 1);
+        }
+
+        [Fact]
+        public async void RetiredKey_NewKeysCreated()
+        {
+            var retiredKey = CreateTestKey(RetiredKeyId, DateTime.UtcNow.Subtract(TimeSpan.FromSeconds(KeyRetirementSec + 1)));
+            var retiredKeySerialized = _serializer.Serialize(retiredKey);
+            var storedKeys = await RunConcurrentServices(new[] { retiredKeySerialized });
+            
+            Assert.NotNull(storedKeys);
+            Assert.True(storedKeys.Where(x => x != retiredKeySerialized).Count() >= 1);
+        }
+
+        [Fact]
+        public async void ExpiredKey_NewKeysCreated()
+        {
+            var expiredKey = CreateTestKey(RetiredKeyId, DateTime.UtcNow.Subtract(TimeSpan.FromSeconds(KeyExpirationSec + 1)));
+            var expiredKeySerialized = _serializer.Serialize(expiredKey);
+            var storedKeys = await RunConcurrentServices(new[] { expiredKeySerialized });
+            
+            Assert.NotNull(storedKeys);
+            Assert.True(storedKeys.Where(x => x != expiredKeySerialized).Count() >= 1);
         }
 
         [Fact]
@@ -69,26 +88,6 @@ namespace Usemam.IdentityServer4.KeyRack.UnitTests
             Assert.Null(storedKeys.FirstOrDefault(x => x.KeyId == ExpiredKeyId));
         }
 
-        [Fact]
-        public async void RetiredKey_TwoNewKeysCreated()
-        {
-            var retiredKey = CreateTestKey(RetiredKeyId, DateTime.UtcNow.Subtract(TimeSpan.FromSeconds(KeyRetirementSec + 1)));
-            var storedKeys = await RunConcurrentServices(new[] { _serializer.Serialize(retiredKey) });
-            
-            Assert.NotNull(storedKeys);
-            Assert.Equal(2, storedKeys.Count());
-        }
-
-        [Fact]
-        public async void ExpiredKey_TwoNewKeysCreated()
-        {
-            var expiredKey = CreateTestKey(RetiredKeyId, DateTime.UtcNow.Subtract(TimeSpan.FromSeconds(KeyExpirationSec + 1)));
-            var storedKeys = await RunConcurrentServices(new[] { _serializer.Serialize(expiredKey) });
-            
-            Assert.NotNull(storedKeys);
-            Assert.Equal(3, storedKeys.Count());
-        }
-
         private async Task<IEnumerable<SerializedKey>> RunConcurrentServices(IEnumerable<SerializedKey> existingKeys)
         {
             _repository = new TestKeyRepository(existingKeys);
@@ -99,8 +98,6 @@ namespace Usemam.IdentityServer4.KeyRack.UnitTests
             Task.WaitAll(
                 Task.Run(() => service1.GetAllKeysAsync().Wait(ServiceExecutionTimeout)),
                 Task.Run(() => service2.GetAllKeysAsync().Wait(ServiceExecutionTimeout)));
-            
-            await Task.Delay(TimeSpan.FromMilliseconds(500));
 
             return await _repository.LoadKeysAsync();
         }

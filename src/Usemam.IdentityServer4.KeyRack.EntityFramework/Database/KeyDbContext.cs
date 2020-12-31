@@ -4,20 +4,10 @@ namespace Usemam.IdentityServer4.KeyRack.EntityFramework
 {
     public class KeyDbContext : DbContext
     {
-        private readonly DatabaseOptions _options;
-
-        public KeyDbContext(DatabaseOptions options) => _options = options;
+        public KeyDbContext(DbContextOptions<KeyDbContext> options)
+            : base(options) { }
 
         public DbSet<Key> Keys { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            base.OnConfiguring(optionsBuilder);
-            if (_options?.DbContextConfigurationCallback != null)
-            {
-                _options.DbContextConfigurationCallback(optionsBuilder);
-            }
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

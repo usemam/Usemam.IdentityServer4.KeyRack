@@ -99,6 +99,7 @@ namespace Usemam.IdentityServer4.KeyRack.IntegrationTests
         {
             yield return new object[] { new DefaultKeyServiceIntegrationFactory() };
             yield return new object[] { new DataProtectionKeyServiceIntegrationFactory() };
+            yield return new object[] { new DatabaseKeyServiceIntegrationFactory() };
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

@@ -1,10 +1,9 @@
 using System;
-
-using Usemam.IdentityServer4.KeyRack;
+using System.IO;
 
 namespace Usemam.IdentityServer4.KeyRack.IntegrationTests
 {
-    public class DefaultKeyServiceIntegrationFactory : IKeyServiceIntegrationFactory
+    public class DefaultKeyServiceIntegrationFactory : IKeyServiceIntegrationFactory, IDisposable
     {
         private readonly string _keysDirectoryPath = $".keys-{Guid.NewGuid()}";
 
@@ -14,6 +13,11 @@ namespace Usemam.IdentityServer4.KeyRack.IntegrationTests
             var serializer = new DefaultKeySerializer();
             var repository = new FileSystemKeyRepository(_keysDirectoryPath);
             return new KeyService(options, repository, serializer, timeKeeper);
+        }
+
+        public void Dispose()
+        {
+            Directory.Delete(_keysDirectoryPath, true);
         }
     }
 }

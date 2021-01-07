@@ -8,6 +8,7 @@ using Usemam.IdentityServer4.KeyRack.Model;
 
 namespace Usemam.IdentityServer4.KeyRack
 {
+    /// <summary><see cref="IKeyRepository" /> implementation for persisting keys in file system</summary>
     public class FileSystemKeyRepository : IKeyRepository
     {
         private const string KeyFileFormatPattern = "key-{0}.json";
@@ -23,6 +24,7 @@ namespace Usemam.IdentityServer4.KeyRack
             }
         }
 
+        /// <inheritdoc />
         public Task DeleteKeyAsync(string keyId)
         {
             string keyFilePath = Path.Combine(_keyDir.FullName, string.Format(KeyFileFormatPattern, keyId));
@@ -38,6 +40,7 @@ namespace Usemam.IdentityServer4.KeyRack
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<SerializedKey>> LoadKeysAsync()
         {
             var result = new List<SerializedKey>();
@@ -60,6 +63,7 @@ namespace Usemam.IdentityServer4.KeyRack
             return result;
         }
 
+        /// <inheritdoc />
         public Task StoreKeyAsync(SerializedKey key)
         {
             string keyFileContent = JsonConvert.SerializeObject(key);

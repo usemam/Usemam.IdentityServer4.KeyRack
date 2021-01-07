@@ -8,6 +8,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Usemam.IdentityServer4.KeyRack
 {
+    /// <summary>
+    /// <see cref="ISigningCredentialStore"/> and <see cref="IValidationKeysStore"/> implementation using <see cref="KeyService"/>
+    /// </summary>
     public class KeyStore : ISigningCredentialStore, IValidationKeysStore
     {
         private readonly IKeyService _keyService;
@@ -34,6 +37,7 @@ namespace Usemam.IdentityServer4.KeyRack
                 .Select(key => new SecurityKeyInfo { Key = key, SigningAlgorithm = SigningAlgorithm });
         }
 
+        /// <summary>Signing algorithm defaults to RS256 for now.</summary>
         private string SigningAlgorithm => IdentityServerConstants.RsaSigningAlgorithm.RS256.ToString();
     }
 }

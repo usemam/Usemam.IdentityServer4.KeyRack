@@ -8,6 +8,7 @@ using Usemam.IdentityServer4.KeyRack.Model;
 
 namespace Usemam.IdentityServer4.KeyRack
 {
+    /// <summary>Default <see cref="IKeyService" /> implementation</summary>
     public class KeyService : IKeyService
     {
         private readonly SemaphoreSlim _rotationLock = new SemaphoreSlim(1);
@@ -28,12 +29,14 @@ namespace Usemam.IdentityServer4.KeyRack
             _timeKeeper = timeKeeper;
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<RsaKey>> GetAllKeysAsync()
         {
             var processTuple = await ProcessKeysAsync();
             return processTuple.Item1;
         }
 
+        /// <inheritdoc />
         public async Task<RsaKey> GetCurrentKeyAsync()
         {
             var processTuple = await ProcessKeysAsync();

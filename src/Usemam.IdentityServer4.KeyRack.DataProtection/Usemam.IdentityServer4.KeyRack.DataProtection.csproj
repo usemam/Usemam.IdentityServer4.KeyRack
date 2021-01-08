@@ -1,7 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <PackageId>Usemam.IdentityServer4.KeyRack.DataProtection</PackageId>
+    <PackageVersion>0.1.0</PackageVersion>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Description>Zero-effort key management extension for IdentityServer4. This package adds key encryption via Microsoft.AspNetCore.DataProtection</Description>
+    <Authors>Usein Mambediiev</Authors>
+    <ProjectUrl>https://github.com/usemam/Usemam.IdentityServer4.KeyRack</ProjectUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

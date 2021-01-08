@@ -1,5 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <PackageId>Usemam.IdentityServer4.KeyRack.EntityFramework</PackageId>
+    <PackageVersion>0.1.0</PackageVersion>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Description>Zero-effort key management extension for IdentityServer4. This package adds database key persistence via Microsoft.EntityFrameworkCore</Description>
+    <Authors>Usein Mambediiev</Authors>
+    <ProjectUrl>https://github.com/usemam/Usemam.IdentityServer4.KeyRack</ProjectUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Usemam.IdentityServer4.KeyRack\Usemam.IdentityServer4.KeyRack.csproj" />
   </ItemGroup>
@@ -8,9 +18,5 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.0" />
   </ItemGroup>
-
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-  </PropertyGroup>
 
 </Project>

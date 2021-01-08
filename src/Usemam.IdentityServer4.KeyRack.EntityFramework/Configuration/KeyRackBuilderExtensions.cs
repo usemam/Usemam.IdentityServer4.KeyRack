@@ -8,6 +8,11 @@ namespace Usemam.IdentityServer4.KeyRack
 {
     public static class KeyRackBuilderExtensions
     {
+        /// <summary>Persist keys to database using <see cref="Microsoft.EntityFrameworkCore" /></summary>
+        /// <param name="options">
+        /// Database access configuration options.
+        /// <see cref="DatabaseOptions.DbContextConfigurationCallback" /> is required.
+        /// </param>
         public static KeyRackBuilder AddDatabasePersistence(this KeyRackBuilder builder, DatabaseOptions options)
         {
             if (options == null)

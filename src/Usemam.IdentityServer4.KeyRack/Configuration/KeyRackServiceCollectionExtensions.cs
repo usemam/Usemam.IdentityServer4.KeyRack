@@ -6,6 +6,11 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class KeyRackServiceCollectionExtensions
     {
+        /// <summary>
+        /// Enables key management add-on for IdentityServer
+        /// </summary>
+        /// <param name="optionsConfig">Custom configuration options</param>
+        /// <returns><see cref="KeyRackBuilder" /> instance</returns>
         public static KeyRackBuilder AddKeyManagement(this IIdentityServerBuilder builder, Action<KeyRackOptions> optionsConfig = null)
         {
             var options = new KeyRackOptions();

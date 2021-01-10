@@ -1,12 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\Usemam.IdentityServer4.KeyRack.DataProtection\Usemam.IdentityServer4.KeyRack.DataProtection.csproj" />
     <ProjectReference Include="..\..\src\Usemam.IdentityServer4.KeyRack.EntityFramework\Usemam.IdentityServer4.KeyRack.EntityFramework.csproj" />
   </ItemGroup>
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="3.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.0" />
+  </ItemGroup>
 
 </Project>

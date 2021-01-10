@@ -1,14 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
+using Usemam.IdentityServer4.KeyRack.EntityFramework;
 
 namespace Database
 {
@@ -24,6 +23,9 @@ namespace Database
         public void ConfigureServices(IServiceCollection services)
         {
             services
+                .AddDataProtection();
+
+            services
                 .AddIdentityServer()
                 .AddInMemoryIdentityResources(Config.GetIdentityResources())
                 .AddInMemoryApiResources(Config.GetApiResources())
@@ -36,15 +38,33 @@ namespace Database
                         options.KeyActivation = TimeSpan.FromSeconds(10);
                         options.KeyExpiration = options.KeyActivation * 2;
                         options.KeyRetirement = options.KeyActivation * 3;
-                    });
-            // todo: add database persistence and data protection
+                    })
+                .AddDatabasePersistence(new DatabaseOptions
+                {
+                    DbContextConfigurationCallback = b =>
+                        b.UseSqlite("Filename=keyStore.db")
+                })
+                .AddDataProtection();
         }
 
         public void Configure(IApplicationBuilder app)
         {
+            InitializeDatabase(app);
+
             if (_environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+            }
+
+            app.UseIdentityServer();
+        }
+
+        private void InitializeDatabase(IApplicationBuilder app)
+        {
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = serviceScope.ServiceProvider.GetRequiredService<KeyDbContext>();
+                context.Database.EnsureCreated();
             }
         }
     }

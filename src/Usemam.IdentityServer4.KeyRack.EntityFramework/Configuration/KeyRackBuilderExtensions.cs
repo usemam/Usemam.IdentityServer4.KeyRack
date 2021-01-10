@@ -1,10 +1,9 @@
 using System;
 
-using Microsoft.Extensions.DependencyInjection;
-
+using Usemam.IdentityServer4.KeyRack;
 using Usemam.IdentityServer4.KeyRack.EntityFramework;
 
-namespace Usemam.IdentityServer4.KeyRack
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class KeyRackBuilderExtensions
     {

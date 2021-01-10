@@ -25,7 +25,7 @@ namespace Usemam.IdentityServer4.KeyRack.Model
         }
 
         /// <summary>RSA key parameters</summary>
-        public RSAParameters RsaParameters { get; }
+        public RSAParameters RsaParameters { get; set; }
 
         /// <summary>Creates <see cref="RsaSecurityKey"/> instance</summary>
         public RsaSecurityKey CreateSecurityKey()

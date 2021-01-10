@@ -46,6 +46,8 @@ namespace Usemam.IdentityServer4.KeyRack.IntegrationTests
             Assert.NotNull(key1);
             Assert.NotNull(key2);
             Assert.Equal(key1, key2);
+            Assert.NotNull(key1.RsaParameters.Exponent);
+            Assert.NotNull(key1.RsaParameters.Modulus);
         }
 
         [Theory]

@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Usemam.IdentityServer4.KeyRack.DataProtection\Usemam.IdentityServer4.KeyRack.DataProtection.csproj" />
+    <ProjectReference Include="..\..\src\Usemam.IdentityServer4.KeyRack.EntityFramework\Usemam.IdentityServer4.KeyRack.EntityFramework.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+</Project>

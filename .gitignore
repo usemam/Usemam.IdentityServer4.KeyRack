@@ -243,3 +243,9 @@ _Pvt_Extensions
 
 # Mac OS
 .[Dd][Ss]_store
+
+# VS Code
+.vscode
+
+# samples
+samples/FileSystem/keyStore

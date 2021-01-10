@@ -3,7 +3,6 @@
 KeyRack is a seamless token signing key management extension for [IdentityServer4](https://github.com/IdentityServer/IdentityServer4). Its mission is to allow for keys to be created and rotated fully automatically - without any manual intervention.
 
 ### Packages
-
-[Usemam.IdentityServer4.KeyRack](https://www.nuget.org/packages/Usemam.IdentityServer4.KeyRack/) - core package
-[Usemam.IdentityServer4.KeyRack.DataProtection](https://www.nuget.org/packages/Usemam.IdentityServer4.KeyRack.DataProtection/) - adds data protection for keys using [Microsoft.AspNetCore.DataProtection.Abstractions](https://www.nuget.org/packages/Microsoft.AspNetCore.DataProtection.Abstractions/)
-[Usemam.IdentityServer4.KeyRack.EntityFramework](https://www.nuget.org/packages/Usemam.IdentityServer4.KeyRack.EntityFramework/) - adds database persistence for keys
+- [Usemam.IdentityServer4.KeyRack](https://www.nuget.org/packages/Usemam.IdentityServer4.KeyRack/) - core package
+- [Usemam.IdentityServer4.KeyRack.DataProtection](https://www.nuget.org/packages/Usemam.IdentityServer4.KeyRack.DataProtection/) - adds data protection for keys using [Microsoft.AspNetCore.DataProtection.Abstractions](https://www.nuget.org/packages/Microsoft.AspNetCore.DataProtection.Abstractions/)
+- [Usemam.IdentityServer4.KeyRack.EntityFramework](https://www.nuget.org/packages/Usemam.IdentityServer4.KeyRack.EntityFramework/) - adds database persistence for keys

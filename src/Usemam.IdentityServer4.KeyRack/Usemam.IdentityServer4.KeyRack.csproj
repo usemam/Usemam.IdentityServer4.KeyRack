@@ -5,9 +5,6 @@
     <PackageVersion>0.1.0</PackageVersion>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Description>Zero-effort key management extension for IdentityServer4.</Description>
-    <Authors>Usein Mambediiev</Authors>
-    <ProjectUrl>https://github.com/usemam/Usemam.IdentityServer4.KeyRack</ProjectUrl>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,0 +1,15 @@
+<Project>
+
+    <PropertyGroup>
+        <Deterministic>true</Deterministic>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <Authors>Usein Mambediiev</Authors>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/usemam/Usemam.IdentityServer4.KeyRack</RepositoryUrl>
+        <PackageTags>IdentityServer;Key management</PackageTags>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+</Project>

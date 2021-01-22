@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Logging;
+
 using Usemam.IdentityServer4.KeyRack.Model;
 
 namespace Usemam.IdentityServer4.KeyRack
@@ -16,17 +18,20 @@ namespace Usemam.IdentityServer4.KeyRack
         private readonly IKeyRepository _repository;
         private readonly IKeySerializer _serializer;
         private readonly ITimeKeeper _timeKeeper;
+        private readonly ILogger<KeyService> _logger;
 
         public KeyService(
             KeyRackOptions options,
             IKeyRepository repository,
             IKeySerializer serializer,
-            ITimeKeeper timeKeeper)
+            ITimeKeeper timeKeeper,
+            ILogger<KeyService> logger)
         {
             _options = options;
             _repository = repository;
             _serializer = serializer;
             _timeKeeper = timeKeeper;
+            _logger = logger;
         }
 
         /// <inheritdoc />
@@ -40,7 +45,18 @@ namespace Usemam.IdentityServer4.KeyRack
         public async Task<RsaKey> GetCurrentKeyAsync()
         {
             var processTuple = await ProcessKeysAsync();
-            return processTuple.Item2;
+            var key = processTuple.Item2;
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                var keyAge = _timeKeeper.GetKeyAge(key);
+                _logger.LogInformation(
+                    "Found active key id = {keyId}. Key will expire after {expiration}. Key will retire after {retirement}.",
+                    key.KeyId,
+                    _options.KeyExpiration.Subtract(keyAge),
+                    _options.KeyRetirement.Subtract(keyAge));
+            }
+
+            return key;
         }
 
         private async Task<(IEnumerable<RsaKey>, RsaKey)> ProcessKeysAsync()
@@ -56,6 +72,7 @@ namespace Usemam.IdentityServer4.KeyRack
 
             if (activeKey == null || rotationDue)
             {
+                _logger.LogDebug("Entering key rotation lock.");
                 await _rotationLock.WaitAsync();
                 try
                 {
@@ -68,11 +85,25 @@ namespace Usemam.IdentityServer4.KeyRack
 
                     if (activeKey == null || rotationDue)
                     {
+                        if (activeKey == null)
+                        {
+                            _logger.LogDebug("No active key found - will create new key.");
+                        }
+                        else
+                        {
+                            _logger.LogDebug("Key rotation required due to approaching retirement - will create new key");
+                        }
+
                         (keys, activeKey) = await RotateKeys();
+                    }
+                    else
+                    {
+                        _logger.LogDebug("Other server created new key.");
                     }
                 }
                 finally
                 {
+                    _logger.LogDebug("Releasing key rotation lock.");
                     _rotationLock.Release();
                 }
             }

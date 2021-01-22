@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Logging;
+
 using Moq;
 
 using Xunit;
 
-using Usemam.IdentityServer4.KeyRack;
 using Usemam.IdentityServer4.KeyRack.Model;
 
 namespace Usemam.IdentityServer4.KeyRack.UnitTests
@@ -31,7 +32,8 @@ namespace Usemam.IdentityServer4.KeyRack.UnitTests
                 _options,
                 _repositoryMock.Object,
                 _serializerMock.Object,
-                _timeKeeper);
+                _timeKeeper,
+                new Mock<ILogger<KeyService>>().Object);
         }
 
         [Fact]

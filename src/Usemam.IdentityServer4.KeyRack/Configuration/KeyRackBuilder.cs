@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Usemam.IdentityServer4.KeyRack
 {
@@ -25,7 +26,8 @@ namespace Usemam.IdentityServer4.KeyRack
         /// <summary>Persist keys to file system</summary>
         public KeyRackBuilder AddFileSystemPersistence(string directoryPath)
         {
-            Services.AddSingleton<IKeyRepository>(_ => new FileSystemKeyRepository(directoryPath));
+            Services.AddSingleton<IKeyRepository>(serviceProvider =>
+                new FileSystemKeyRepository(directoryPath, serviceProvider.GetRequiredService<ILogger<FileSystemKeyRepository>>()));
             return this;
         }
     }

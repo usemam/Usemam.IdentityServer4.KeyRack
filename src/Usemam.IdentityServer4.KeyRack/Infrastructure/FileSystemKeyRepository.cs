@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
 
 using Newtonsoft.Json;
 
@@ -15,7 +18,11 @@ namespace Usemam.IdentityServer4.KeyRack
 
         private readonly DirectoryInfo _keyDir;
 
-        public FileSystemKeyRepository(string dirPath)
+        private readonly ILogger<FileSystemKeyRepository> _logger;
+
+        /// <param name="dirPath">Path to a directory where keys will be stored.</param>
+        /// <param name="logger">Logger</param>
+        public FileSystemKeyRepository(string dirPath, ILogger<FileSystemKeyRepository> logger)
         {
             _keyDir = new DirectoryInfo(dirPath);
             if (!_keyDir.Exists)
@@ -32,9 +39,9 @@ namespace Usemam.IdentityServer4.KeyRack
             {
                 File.Delete(keyFilePath);
             }
-            catch
+            catch (Exception exception)
             {
-                // todo: log error
+                _logger.LogError(exception, $"Error while deleting file '{keyFilePath}'");
             }
 
             return Task.CompletedTask;
@@ -54,9 +61,9 @@ namespace Usemam.IdentityServer4.KeyRack
                         result.Add(JsonConvert.DeserializeObject<SerializedKey>(await reader.ReadToEndAsync()));
                     }
                 }
-                catch
+                catch (Exception exception)
                 {
-                    // todo: log error
+                    _logger.LogError(exception, $"Error while reading file '{keyFile.Name}'");
                 }
             }
 

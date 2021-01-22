@@ -5,6 +5,7 @@ using Usemam.IdentityServer4.KeyRack.EntityFramework;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
+    /// <summary>Configuration builder extensions</summary>
     public static class KeyRackBuilderExtensions
     {
         /// <summary>Persist keys to database using <see cref="Microsoft.EntityFrameworkCore" /></summary>

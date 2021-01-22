@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Logging;
+
+using Moq;
+
 using Xunit;
 
 using Usemam.IdentityServer4.KeyRack.Model;
@@ -103,7 +107,7 @@ namespace Usemam.IdentityServer4.KeyRack.UnitTests
         }
 
         private IKeyService NewService() =>
-            new KeyService(_options, _repository, _serializer, _timeKeeper);
+            new KeyService(_options, _repository, _serializer, _timeKeeper, new Mock<ILogger<KeyService>>().Object);
 
         private class TestKeyRepository : IKeyRepository
         {
